@@ -1,118 +1,197 @@
 // import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import classNames from 'classnames';
 
 export function DatePicker(props) {
-  // const [year, setYear] = useState(null);
-  // const [month, setMonth] = useState(null);
+  const [year, setYear] = useState();
+  const [month, setMonth] = useState();
+  const [mode, setMode] = useState('day');
 
-  const dayOfWeekMapping = {
-    0: 'Sunday',
-    1: 'Monday',
-    2: 'Tuesday',
-    3: 'Wednesday',
-    4: 'Thursday',
-    5: 'Friday',
-    6: 'Saturday'
-  }
+  const monthMapping = useMemo(() => ({
+    1: 'January',
+    2: 'February',
+    3: 'March',
+    4: 'April',
+    5: 'May',
+    6: 'June',
+    7: 'July',
+    8: 'August',
+    9: 'September',
+    10: 'October',
+    11: 'November',
+    12: 'December'
+  }), []);
 
-  let currentDate = new Date();
-  let year = currentDate.getFullYear();
-  let month = currentDate.getMonth() + 1;
-  // let year = 2018;
-  // let month = 8;
+  // const dayOfWeekMapping = {
+  //   0: 'Sunday',
+  //   1: 'Monday',
+  //   2: 'Tuesday',
+  //   3: 'Wednesday',
+  //   4: 'Thursday',
+  //   5: 'Friday',
+  //   6: 'Saturday'
+  // }
 
-  console.log('year:', year);
-  console.log('month:', month);
+  const currentDate = useMemo(() => { console.log('inside'); return new Date()}, []);
+  const currentMonth = useMemo(() => currentDate.getMonth() + 1, [currentDate]);
+  const currentYear = useMemo(() => currentDate.getFullYear(), [currentDate]);
 
-  const getShiftedMonth = (month) => ((month + 9) % 12) + 1;
-  const getDigits = (year, from) => parseInt(year.toString().substr(from,2), 10);
-  const lastTwoDigitsFromYear = getDigits(year, 2);
-  const firstTwoDigitsFromYear = getDigits(year, 0);
+  console.log('currentMonth:', currentMonth);
+  
+  useEffect(() => {
+    console.log('here!!!');
+    setMonth(currentDate.getMonth() + 1);
+    setYear(currentDate.getFullYear());
+  }, [currentDate]);
 
   // find day of week for the first day of the month
-  const dayOfWeek = Math.floor(Math.abs((1 + (2.6 * getShiftedMonth(month) - 0.2) + lastTwoDigitsFromYear + lastTwoDigitsFromYear / 4 + firstTwoDigitsFromYear / 4 - 2 * firstTwoDigitsFromYear) % 7));
+  const dayOfWeek = useMemo(() => {
+    if (month && year) {
+      console.log('in dayOfWeek:', month, year);
 
+      const getShiftedMonth = (month) => ((month + 9) % 12) + 1;
+      const getDigits = (year, from) => parseInt(year.toString().substr(from, 2), 10);
 
-  console.log('dayOfWeek:', dayOfWeek);
+      console.log('getShiftedMonth:', getShiftedMonth(month));
+      console.log('getDigits:', getDigits(year, 0));
 
-  const getLastDayInMonth = (year, month) => {
-    const date = new Date(year, month, 0);
-    console.log('new Date(year, month, 0):', date);
+      const result = (Math.floor(Math.abs(
+        (1 + (2.6 * getShiftedMonth(month) - 0.2) + getDigits(year, 2) 
+        + getDigits(year, 2) / 4 + getDigits(year, 0) / 4 - 2 * getDigits(year, 0)) % 7
+      )));
 
-    return date;
-  };
+      console.log('result:', result);
 
-  console.log('getLastDayInMonth:', getLastDayInMonth(year, month));
+      return result;
+    }
+  }, [month, year]);
 
-  const getLastDayInPrevousMonth = (date) => {
-    const copiedDate = new Date(date.getTime());
-    copiedDate.setDate(1); // going to 1st of the month
-    copiedDate.setHours(-1); // going to last hour before this date even started.
-    return copiedDate;
-  }
+  console.log('=== dayOfWeek:', dayOfWeek);
+  console.log('=== month:', month);
 
-  const renderDaysInMonth = () => {
-    const rows = 6;
-    const columns = 7;
-    const DaysInMonth = [];
+  const renderDaysInMonth = useCallback(() => {
+    console.log('year:', year);
+    console.log('month:', month);
 
-    const lastDayInThisMonth = getLastDayInMonth(year, month);
-    const lastDayInPreviousMonth = getLastDayInPrevousMonth(lastDayInThisMonth);
-    let dateInThisMonth = 1;
-    let dateInNextMonth = 1;
+    if (year && month) {
+      const rows = 6;
+      const columns = 7;
+      const DaysInMonth = [];
 
-    console.log('lastDayInThisMonth:', lastDayInThisMonth.getDate());
-    console.log('lastDayInPreviousMonth:', lastDayInPreviousMonth.getDate());
+      const getLastDayInMonth = (year, month) => {
+        const date = new Date(year, month, 0);
+        // console.log('new Date(year, month, 0):', date);
 
-    for (let row = 0; row < rows; row++) {
-      for (let column = 0; column < columns; column++) {
-        if (row === 0 && column < dayOfWeek) {
-          const copiedDate = new Date(lastDayInPreviousMonth.getTime());
-          copiedDate.setDate(copiedDate.getDate() - (dayOfWeek - column) + 1);
-          DaysInMonth.push(copiedDate);
-          // DaysInMonth.push(lastDayInPreviousMonth.getDate() - (dayOfWeek - column) + 1)
-        } else {
-          if (dateInThisMonth <= lastDayInThisMonth.getDate()) {
+        return date;
+      };
+  
+      const getLastDayInPrevousMonth = (date) => {
+        const copiedDate = new Date(date.getTime());
+        copiedDate.setDate(1); // going to 1st of the month
+        copiedDate.setHours(-1); // going to last hour before this date even started.
+        return copiedDate;
+      };
+
+      const lastDayInThisMonth = getLastDayInMonth(year, month);
+      const lastDayInPreviousMonth = getLastDayInPrevousMonth(lastDayInThisMonth);
+      let dateInThisMonth = 1;
+      let dateInNextMonth = 1;
+
+      console.log('lastDayInThisMonth:', lastDayInThisMonth.getDate());
+      console.log('lastDayInPreviousMonth:', lastDayInPreviousMonth.getDate());
+
+      for (let row = 0; row < rows; row++) {
+        for (let column = 0; column < columns; column++) {
+          if (row === 0 && column < dayOfWeek) {
             const copiedDate = new Date(lastDayInPreviousMonth.getTime());
-            copiedDate.setHours(dateInThisMonth*24);
+            copiedDate.setDate(copiedDate.getDate() - (dayOfWeek - column) + 1);
             DaysInMonth.push(copiedDate);
-            // DaysInMonth.push(dateInThisMonth);
-            dateInThisMonth ++;
+          // DaysInMonth.push(lastDayInPreviousMonth.getDate() - (dayOfWeek - column) + 1)
           } else {
-            const copiedDate = new Date(lastDayInThisMonth.getTime());
-            copiedDate.setHours(dateInNextMonth*24);
-            DaysInMonth.push(copiedDate);
-            // DaysInMonth.push(dateInNextMonth);
-            dateInNextMonth ++;
+            if (dateInThisMonth <= lastDayInThisMonth.getDate()) {
+              const copiedDate = new Date(lastDayInPreviousMonth.getTime());
+              copiedDate.setHours(dateInThisMonth*24);
+              DaysInMonth.push(copiedDate);
+              // DaysInMonth.push(dateInThisMonth);
+              dateInThisMonth ++;
+            } else {
+              const copiedDate = new Date(lastDayInThisMonth.getTime());
+              copiedDate.setHours(dateInNextMonth*24);
+              DaysInMonth.push(copiedDate);
+              // DaysInMonth.push(dateInNextMonth);
+              dateInNextMonth ++;
+            }
           }
         }
       }
+
+      // console.log('DaysInMonth:', DaysInMonth);
+
+      return DaysInMonth.map(obj => {
+        const isToday = obj.toDateString() === currentDate.toDateString();
+        return <span className={ classNames('date-body', { current: isToday }) } key={obj}>{obj.getDate()}</span>;
+      });
     }
+  }, [year, month, currentDate, dayOfWeek]);
 
-    console.log('DaysInMonth:', DaysInMonth);
+  useEffect(() => renderDaysInMonth, [renderDaysInMonth]);
 
-    return DaysInMonth.map(obj => {
-      const isToday = obj.toDateString() === currentDate.toDateString();
-      // if (obj.toDateString() === currentDate.toDateString()) {
-      //   console.log('obj is today:', obj);
-      // }
-      return <span className={ classNames('date-body', { current: isToday }) } key={obj}>{obj.getDate()}</span>;
-    });
-  }
+  const switchMode = useCallback(() => {
+    if (mode === 'day') {
+      setMode('month');
+    } else if (mode === 'month') {
+      setMode('year');
+    }
+  }, [mode]);
+
+  const renderGrid = useCallback(() => {
+    const updateMonth = (key) => {
+      setMonth(parseInt(key));
+      setMode('day');
+    };
+
+    if (mode === 'month') {
+      return Object.keys(monthMapping).map(key => 
+        <span className={ classNames('month-grid', { current: currentMonth === parseInt(key) }) } key={key} onClick={() => updateMonth(key)}>{monthMapping[key].slice(0,3)}</span>);
+    } else {
+      const index = year % 12;
+      const result = [];
+      for (let i = 1; i <= 12; i++) {
+        const outputYear = year - index + i;
+        result.push(<span className={ classNames('year-grid', { current: currentYear === outputYear }) }>{outputYear}</span>);
+      }
+      return result;
+    }
+  }, [mode, year, monthMapping, currentMonth, currentYear]);
+
+  const head =  useMemo(() => {
+    if (mode === 'day') {
+      /* <span className="month">{currentDate.toLocaleString('default', { month: 'long' })}</span> */
+      return (
+        <div>
+          <span className="month">{monthMapping[month]}</span>
+          <span className="year">{year}</span>
+        </div>);
+    } else if (mode === 'month') {
+      return <span className="year">{year}</span>;
+    } else {
+      return <span className="year">{year}</span>;
+    }
+  }, [mode, month, year, monthMapping]);
+
+  
 
   return (
     <div className="datepicker">
       <div className="datepicker-head">
-        <span className="arrow left"></span>
-        <div className="wrapper">
-          <span className="month">{currentDate.toLocaleString('default', { month: 'long' })}</span>
-          <span className="year">{year}</span>
+        <span className="arrow left" onClick={() => setMonth(month - 1)}></span>
+        <div className="wrapper" onClick={switchMode}>
+          {head}
         </div>
-        <span className="arrow right"></span>
+        <span className="arrow right" onClick={() => setMonth(month + 1)}></span>
       </div>
       <div className="datepicker-body">
-        {renderDaysInMonth()}
+        {mode === 'day' ? renderDaysInMonth() : renderGrid()}
       </div>
     </div>
   );

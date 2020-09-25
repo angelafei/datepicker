@@ -62,11 +62,21 @@ html {
   display: flex;
   flex-flow: wrap;
 
-  .date-body {
+  .date-body, .month-grid, .year-grid {
     display: inline-block;
     flex: 0 0 14.285%;
     padding: .5rem;
     box-sizing: border-box;
     text-align: center;
+  }
+
+  .month-grid, .year-grid {
+    flex: 0 0 25%;
+
+    &.current {
+      background: #db3d44;
+      border-radius: 50%;
+      color: #ffffff;
+    }
   }
 }
