@@ -49,20 +49,26 @@ export function DatePicker(props) {
     if (month && year) {
       console.log('in dayOfWeek:', month, year);
 
+      const shiftedYear = (month === 1 || month === 2) ? year - 1 : year;
+
       const getShiftedMonth = (month) => ((month + 9) % 12) + 1;
-      const getDigits = (year, from) => parseInt(year.toString().substr(from, 2), 10);
+      const getDigits = (y, from) => parseInt(y.toString().substr(from, 2), 10);
 
-      console.log('getShiftedMonth:', getShiftedMonth(month));
-      console.log('getDigits:', getDigits(year, 0));
+      // console.log('getShiftedMonth:', getShiftedMonth(month));
+      // console.log('getDigits:', getDigits(shiftedYear, 0));
 
-      const result = (Math.floor(Math.abs(
-        (1 + (2.6 * getShiftedMonth(month) - 0.2) + getDigits(year, 2) 
-        + getDigits(year, 2) / 4 + getDigits(year, 0) / 4 - 2 * getDigits(year, 0)) % 7
-      )));
+      const result = 
+        (1 + Math.floor(2.6 * getShiftedMonth(month) - 0.2) + getDigits(shiftedYear, 2) 
+        + Math.floor(getDigits(shiftedYear, 2) / 4) + Math.floor(getDigits(shiftedYear, 0) / 4) 
+        - 2 * getDigits(shiftedYear, 0)) % 7;
 
       console.log('result:', result);
 
-      return result;
+      return (result < 0) ? result + 7 : result;
+
+      // console.log('=========', -1%7);
+
+      // return result;
     }
   }, [month, year]);
 
@@ -150,6 +156,11 @@ export function DatePicker(props) {
       setMode('day');
     };
 
+    const updateYear = (outputYear) => {
+      setYear(outputYear);
+      setMode('month');
+    };
+
     if (mode === 'month') {
       return Object.keys(monthMapping).map(key => 
         <span className={ classNames('month-grid', { current: currentMonth === parseInt(key) }) } key={key} onClick={() => updateMonth(key)}>{monthMapping[key].slice(0,3)}</span>);
@@ -158,7 +169,7 @@ export function DatePicker(props) {
       const result = [];
       for (let i = 1; i <= 12; i++) {
         const outputYear = year - index + i;
-        result.push(<span className={ classNames('year-grid', { current: currentYear === outputYear }) }>{outputYear}</span>);
+        result.push(<span className={ classNames('year-grid', { current: currentYear === outputYear }) } key={outputYear} onClick={() => updateYear(outputYear)}>{outputYear}</span>);
       }
       return result;
     }
@@ -179,16 +190,36 @@ export function DatePicker(props) {
     }
   }, [mode, month, year, monthMapping]);
 
-  
+  const switchPage = useCallback((nav) => {
+    if (mode === 'day') {
+      if (nav === 'prev') {
+        setMonth(month - 1);
+      } else {
+        setMonth(month + 1);
+      }
+    } else if (mode === 'month') {
+      if (nav === 'prev') {
+        setYear(year - 1);
+      } else {
+        setYear(year + 1);
+      }
+    } else {
+      if (nav === 'prev') {
+        setYear(year - 12);
+      } else {
+        setYear(year + 12);
+      }
+    }
+  }, [mode, month, year]);
 
   return (
     <div className="datepicker">
       <div className="datepicker-head">
-        <span className="arrow left" onClick={() => setMonth(month - 1)}></span>
+        <span className="arrow left" onClick={() => switchPage('prev')}></span>
         <div className="wrapper" onClick={switchMode}>
           {head}
         </div>
-        <span className="arrow right" onClick={() => setMonth(month + 1)}></span>
+        <span className="arrow right" onClick={() => switchPage('next')}></span>
       </div>
       <div className="datepicker-body">
         {mode === 'day' ? renderDaysInMonth() : renderGrid()}
@@ -197,6 +228,4 @@ export function DatePicker(props) {
   );
 }
 
-DatePicker.propTypes = {
-  // isLoading: PropTypes.bool
-};
+
