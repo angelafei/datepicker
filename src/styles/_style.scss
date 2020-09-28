@@ -68,15 +68,19 @@ html {
     padding: .5rem;
     box-sizing: border-box;
     text-align: center;
-  }
-
-  .month-grid, .year-grid {
-    flex: 0 0 25%;
 
     &.current {
+      color: #db3d44;
+    }
+
+    &.selected {
       background: #db3d44;
       border-radius: 50%;
       color: #ffffff;
     }
+  }
+
+  .month-grid, .year-grid {
+    flex: 0 0 25%;
   }
 }

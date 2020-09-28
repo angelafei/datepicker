@@ -1,11 +1,16 @@
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import classNames from 'classnames';
 
-export function DatePicker(props) {
-  const [year, setYear] = useState();
-  const [month, setMonth] = useState();
+export function DatePicker({ isHidden, onSelect }) {
+  const currentDate = useMemo(() => { console.log('inside'); return new Date()}, []);
+  const currentMonth = useMemo(() => currentDate.getMonth() + 1, [currentDate]);
+  const currentYear = useMemo(() => currentDate.getFullYear(), [currentDate]);
+
+  const [year, setYear] = useState(currentDate.getFullYear());
+  const [month, setMonth] = useState(currentDate.getMonth() + 1);
   const [mode, setMode] = useState('day');
+  const [selectedDate, setSelectedDate] = useState(currentDate);
 
   const monthMapping = useMemo(() => ({
     1: 'January',
@@ -32,17 +37,13 @@ export function DatePicker(props) {
   //   6: 'Saturday'
   // }
 
-  const currentDate = useMemo(() => { console.log('inside'); return new Date()}, []);
-  const currentMonth = useMemo(() => currentDate.getMonth() + 1, [currentDate]);
-  const currentYear = useMemo(() => currentDate.getFullYear(), [currentDate]);
-
   console.log('currentMonth:', currentMonth);
   
-  useEffect(() => {
-    console.log('here!!!');
-    setMonth(currentDate.getMonth() + 1);
-    setYear(currentDate.getFullYear());
-  }, [currentDate]);
+  // useEffect(() => {
+  //   console.log('here!!!');
+  //   setMonth(currentDate.getMonth() + 1);
+  //   setYear(currentDate.getFullYear());
+  // }, [currentDate]);
 
   // find day of week for the first day of the month
   const dayOfWeek = useMemo(() => {
@@ -133,12 +134,23 @@ export function DatePicker(props) {
 
       // console.log('DaysInMonth:', DaysInMonth);
 
+      const onDateSelected = obj => {
+        setSelectedDate(obj);
+        onSelect && onSelect(obj);
+      }
+
       return DaysInMonth.map(obj => {
         const isToday = obj.toDateString() === currentDate.toDateString();
-        return <span className={ classNames('date-body', { current: isToday }) } key={obj}>{obj.getDate()}</span>;
+        const isSelected = obj.toDateString() === selectedDate.toDateString();
+        return <span 
+          className={ classNames('date-body', { current: isToday }, { selected: isSelected }) }
+          key={obj}
+          onClick={() => onDateSelected(obj)}>
+          {obj.getDate()}
+        </span>;
       });
     }
-  }, [year, month, currentDate, dayOfWeek]);
+  }, [year, month, currentDate, dayOfWeek, onSelect, selectedDate]);
 
   useEffect(() => renderDaysInMonth, [renderDaysInMonth]);
 
@@ -213,7 +225,7 @@ export function DatePicker(props) {
   }, [mode, month, year]);
 
   return (
-    <div className="datepicker">
+    <div className={ classNames('datepicker', { hidden: isHidden }) }>
       <div className="datepicker-head">
         <span className="arrow left" onClick={() => switchPage('prev')}></span>
         <div className="wrapper" onClick={switchMode}>
@@ -228,4 +240,7 @@ export function DatePicker(props) {
   );
 }
 
-
+DatePicker.propTypes = {
+  isHidden: PropTypes.bool,
+  onSelect: PropTypes.func
+};
