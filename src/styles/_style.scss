@@ -16,13 +16,17 @@ html {
 }
 
 .datepicker {
-  width: 500px;
+  width: 300px;
+
+  &.with-border {
+    border: 1px solid #eeeeee;
+  }
 }
 
 .datepicker-head {
   display: flex;
-  justify-content: center;
-  padding: 1rem 0;
+  justify-content: space-between;
+  padding: 1rem 1.2rem;
 
   .arrow {
     display: inline-block;
@@ -65,9 +69,22 @@ html {
   .date-body, .month-grid, .year-grid {
     display: inline-block;
     flex: 0 0 14.285%;
-    padding: .5rem;
     box-sizing: border-box;
     text-align: center;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &::before {
+      content: '';
+      float: left;
+      padding-top: 100%;
+    }
+
+    &.non-active {
+      color: #eeeeee;
+    }
 
     &.current {
       color: #db3d44;
