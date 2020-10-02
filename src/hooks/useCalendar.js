@@ -6,8 +6,6 @@ export const useCalendar = ({ month, year, currentDate }) => {
 
   // find day of week for the first day of the month
   const dayOfWeek = useMemo(() => {
-    console.log('[useCalendar] in dayOfWeek:', month, year);
-
     const shiftedYear = (month === 1 || month === 2) ? year - 1 : year;
 
     const getShiftedMonth = (month) => ((month + 9) % 12) + 1;

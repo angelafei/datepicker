@@ -230,9 +230,6 @@ describe('Datepicker Component', function () {
       const years = yearRange.split('-');
       const newYears = newYearRange.split('-');
 
-      console.log('yearRange:', yearRange);
-      console.log('newYearRange:', newYearRange);
-
       expect(parseInt(newYears[0])).to.equal(parseInt(years[0])-12);
       expect(parseInt(newYears[1])).to.equal(parseInt(years[1])-12);
     });
@@ -253,9 +250,6 @@ describe('Datepicker Component', function () {
   
       const years = yearRange.split('-');
       const newYears = newYearRange.split('-');
-
-      console.log('yearRange:', yearRange);
-      console.log('newYearRange:', newYearRange);
 
       expect(parseInt(newYears[0])).to.equal(parseInt(years[0])+12);
       expect(parseInt(newYears[1])).to.equal(parseInt(years[1])+12);

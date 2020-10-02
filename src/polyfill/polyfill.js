@@ -1,3 +1,4 @@
+// for IE
 if (!String.prototype.padStart) {
   String.prototype.padStart = function padStart(targetLength,padString) {
     targetLength = targetLength>>0; //truncate if number or convert non-number to 0;

@@ -1,6 +1,5 @@
 import React from 'react';
 import jsdom from 'mocha-jsdom';
-import sinon from 'sinon';
 import { expect } from 'chai';
 import { render } from '@testing-library/react';
 import ReactTestUtils from 'react-dom/test-utils';

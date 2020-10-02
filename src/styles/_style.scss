@@ -15,6 +15,20 @@ html {
   display: none;
 }
 
+.task-container {
+  padding: 2rem;
+
+  h2 {
+    font-size: 1.6rem;
+    font-weight: bold;
+    padding: 1rem 0;
+  }
+
+  + .task-container {
+    padding-top: 6rem;
+  }
+}
+
 .datepicker {
   min-width: 300px;
 

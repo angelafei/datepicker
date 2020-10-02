@@ -46,20 +46,11 @@ export function DatePickerInput() {
     value.match('^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])$') !== null;
 
   const handleChange = useCallback(event => {
-    console.log('event.target.value:', event.target.value);
     inputValue !== event.target.value && setInputValue(event.target.value);
 
-    console.log('!!!dateIsValid:', dateIsValid(event.target.value));
-
     if (dateIsValid(event.target.value)) {
-      const splited = event.target.value.split('-');
-      // const updatedISODate = `${String(splited[0]).padStart(4, '0')}-${String(splited[1])
-      //   .padStart(2, '0')}-${String(splited[2]).padStart(2, '0')}`;
-        
+      const splited = event.target.value.split('-');        
       setCurrentDate(new Date(splited[0], splited[1]-1, splited[2]));
-      console.log('new Date(event.target.value):', new Date(new Date(splited[0], splited[1]-1, splited[2])));
-
-      // setInputValue(event.target.value);
     }
   }, [inputValue]);
 
@@ -76,33 +67,13 @@ export function DatePickerInput() {
     }
 
     const splited = event.target.value.split('-');
-    // const isValid = value => value !== '' || !isNaN(value);
 
-    // console.log(typeof year);
-
-    // let newYear = 0;
-    // let newMonth = 1;
-    // let newDate = 1;
-
-    // if (year !== splited[0]) {
     const newYear = splited[0];
-    // }
-
-    // if (month !== splited[1]) {
     const newMonth = splited[1];
-    // }
-
-    // if (date !== splited[2]) {
     const newDate = splited[2];
-    // }
-
-    // console.log('newYear:', typeof newYear);
-    // console.log('newMonth:', newMonth);
-    // console.log('newDate:', newDate);
 
     const updatedDate = new Date(newYear, newMonth-1, newDate);
 
-    // console.log('updatedDate:', updatedDate);
 
     setCurrentDate(updatedDate);
 
