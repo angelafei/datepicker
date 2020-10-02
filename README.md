@@ -23,7 +23,7 @@ $ npm run test
 
 ### DatePickerInput
 
-Displays an input field complete with input and a calendar.
+Displays the date input field and the calendar view.
 
 ### DatePicker
 

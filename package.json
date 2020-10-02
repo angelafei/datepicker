@@ -12,6 +12,7 @@
     "eslint": "eslint .",
     "eslint-fix": "eslint . --fix"
   },
+  "pre-commit": "eslint",
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -52,7 +53,6 @@
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
   },
-  "pre-commit": "eslint",
   "nyc": {
     "require": [
       "@babel/register"
