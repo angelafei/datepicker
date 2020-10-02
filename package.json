@@ -65,6 +65,7 @@
     ],
     "exclude": [
       "src/**/*.spec.js",
+      "src/polyfill",
       "src/fonts",
       "src/styles"
     ]

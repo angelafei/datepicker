@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo, useRef } from 'react';
 
 import { DatePicker } from './DatePicker';
+import '../polyfill/polyfill';
 
 export function DatePickerInput() {
   const [currentDate, setCurrentDate] = useState(new Date());
