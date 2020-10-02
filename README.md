@@ -39,7 +39,7 @@ Displays calendar component.
 |showBorder|boolean|n/a|Whether to show border for calendar component.|
 
 ## File Structure
-
+```
 ├── README.md
 ├── package-lock.json
 ├── package.json
@@ -67,3 +67,4 @@ Displays calendar component.
 │           ├── Datepicker.spec.js
 │           └── DatepickerInput.spec.js
 └── webpack.config.js
+```
