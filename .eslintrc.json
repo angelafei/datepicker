@@ -30,6 +30,13 @@
     "indent": [
       "error",
       2
+    ],
+    "max-len": [
+      "error",
+      {
+        "code": 120,
+        "tabWidth": 2
+      }
     ]
   }
 }

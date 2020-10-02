@@ -7,8 +7,8 @@ import './styles/main.scss';
 export function App() {
   return (
     <div>
-      <DatePicker />
       <DatePickerInput />
+      <DatePicker />
     </div>
   );
 }

@@ -5,9 +5,7 @@ import classNames from 'classnames';
 import { useCalendar } from '../hooks/useCalendar';
 
 export function DatePicker({ isHidden, externalSelectedDate, onSelect, showBorder }) {
-  console.log('externalSelectedDate:', externalSelectedDate);
-
-  const currentDate = useMemo(() => { console.log('inside'); return new Date()}, []);
+  const currentDate = useMemo(() => new Date(), []);
   const currentMonth = useMemo(() => currentDate.getMonth() + 1, [currentDate]);
   const currentYear = useMemo(() => currentDate.getFullYear(), [currentDate]);
 
@@ -16,8 +14,6 @@ export function DatePicker({ isHidden, externalSelectedDate, onSelect, showBorde
   const [mode, setMode] = useState('day');
   const [selectedDate, setSelectedDate] = useState(currentDate);
   const DaysInMonth = useCalendar({ month, year, currentDate });
-
-  console.log('[DatePicker] DaysInMonth:', DaysInMonth);
 
   const monthMapping = useMemo(() => ({
     1: 'January',
@@ -34,10 +30,7 @@ export function DatePicker({ isHidden, externalSelectedDate, onSelect, showBorde
     12: 'December'
   }), []);
 
-  console.log('currentMonth:', currentMonth);
-  console.log('=== month:', month);
-
-  useEffect(() => { 
+  useEffect(() => {
     if (externalSelectedDate) {
       setSelectedDate(externalSelectedDate);
       setYear(externalSelectedDate.getFullYear());
@@ -51,26 +44,33 @@ export function DatePicker({ isHidden, externalSelectedDate, onSelect, showBorde
   }, [onSelect]);
 
   const renderDaysInMonth = useCallback(() => {
-    return DaysInMonth.map(obj => {
+    const getTitle = () => {
+      const daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+
+      return (<div className="title-wrapper">
+        {daysOfWeek.map(title => <span key={title} className="date-title">{title}</span>)}
+      </div>);
+    };
+
+    return (<div className="days-wrapper">{getTitle()}{DaysInMonth.map(obj => {
       const isCurrentMonth = obj.getMonth() + 1 === month;
       const isToday = obj.toDateString() === currentDate.toDateString();
       const isSelected = obj.toDateString() === selectedDate.toDateString();
 
-      return <div 
-        className={ classNames('date-body', { 'non-active': !isCurrentMonth }, { 'current': isToday }, { 'selected': isSelected }) }
+      return <div
+        className={classNames('date-body',
+          { 'non-active': !isCurrentMonth }, { 'current': isToday }, { 'selected': isSelected })}
         key={obj}
         onClick={() => onDateSelected(obj)}>
         {obj.getDate()}
       </div>;
-    });
+    })}</div>);
   }, [currentDate, month, DaysInMonth, onDateSelected, selectedDate]);
-
-  useEffect(() => renderDaysInMonth, [renderDaysInMonth]);
 
   const switchMode = useCallback(() => {
     if (mode === 'day') {
       setMode('month');
-    } else if (mode === 'month') {
+    } else {
       setMode('year');
     }
   }, [mode]);
@@ -84,12 +84,19 @@ export function DatePicker({ isHidden, externalSelectedDate, onSelect, showBorde
     const index = year % 12;
     const result = [];
     const yearsRange = [];
+
     for (let i = 1; i <= 12; i++) {
       const outputYear = year - index + i;
       if (i === 1 || i === 12) {
         yearsRange.push(outputYear);
       }
-      result.push(<span className={ classNames('year-grid', { current: currentYear === outputYear }) } key={outputYear} onClick={() => updateYear(outputYear)}>{outputYear}</span>);
+      result.push(<div
+        className={classNames('year-grid',
+          { current: currentYear === outputYear })}
+        key={outputYear}
+        onClick={() => updateYear(outputYear)}>
+        <span className={classNames({ 'selected': year === outputYear })}>{outputYear}</span>
+      </div>);
     }
     return { result, yearsRange: yearsRange.join('-') };
   }, [currentYear, year]);
@@ -101,16 +108,23 @@ export function DatePicker({ isHidden, externalSelectedDate, onSelect, showBorde
     };
 
     if (mode === 'month') {
-      return Object.keys(monthMapping).map(key => 
-        <span className={ classNames('month-grid', { current: currentMonth === parseInt(key) }) } key={key} onClick={() => updateMonth(key)}>{monthMapping[key].slice(0,3)}</span>);
+      return Object.keys(monthMapping).map(key =>
+        <div
+          className={classNames('month-grid',
+            { current: currentMonth === parseInt(key) })}
+          key={key}
+          onClick={() => updateMonth(key)}>
+          <span className={classNames({ 'selected': month === parseInt(key) })}>
+            {monthMapping[key].slice(0, 3)}
+          </span>
+        </div>);
     } else {
       return getYears().result;
     }
-  }, [mode, getYears, monthMapping, currentMonth]);
+  }, [mode, month, getYears, monthMapping, currentMonth]);
 
-  const head =  useMemo(() => {
+  const head = useMemo(() => {
     if (mode === 'day') {
-      /* <span className="month">{currentDate.toLocaleString('default', { month: 'long' })}</span> */
       return (
         <div>
           <span className="month">{monthMapping[month]}</span>
@@ -156,7 +170,9 @@ export function DatePicker({ isHidden, externalSelectedDate, onSelect, showBorde
   }, [mode, month, year]);
 
   return (
-    <div className={ classNames('datepicker', { 'hidden': isHidden }, { 'with-border': showBorder }) } onMouseDown={event => event.preventDefault() }>
+    <div
+      className={classNames('datepicker', { 'hidden': isHidden }, { 'with-border': showBorder })}
+      onMouseDown={event => event.preventDefault()}>
       <div className="datepicker-head">
         <span className="arrow left" onClick={() => switchPage('prev')}></span>
         <div className="wrapper" onClick={switchMode}>

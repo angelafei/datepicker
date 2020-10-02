@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "",
+    "test": "nyc mocha --colors --require @babel/register --require ignore-styles src/tests/** --timeout 10000",
     "dev": "webpack-dev-server --mode=development --inline --progress --colors --config webpack.config.js",
     "build-dev": "webpack --mode development",
     "build": "webpack --mode production",

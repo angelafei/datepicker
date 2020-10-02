@@ -24,18 +24,12 @@ export const useCalendar = ({ month, year, currentDate }) => {
   }, [month, year]);
 
   useEffect(() => {
-    console.log('[useCalendar] year:', year);
-    console.log('[useCalendar] month:', month);
-
-    // if (year && month) {
     const rows = 6;
     const columns = 7;
     const DaysInMonth = [];
 
     const getLastDayInMonth = (year, month) => {
       const date = new Date(year, month, 0);
-      // console.log('new Date(year, month, 0):', date);
-
       return date;
     };
   
@@ -51,28 +45,22 @@ export const useCalendar = ({ month, year, currentDate }) => {
     let dateInThisMonth = 1;
     let dateInNextMonth = 1;
 
-    console.log('lastDayInThisMonth:', lastDayInThisMonth.getDate());
-    console.log('lastDayInPreviousMonth:', lastDayInPreviousMonth.getDate());
-
     for (let row = 0; row < rows; row++) {
       for (let column = 0; column < columns; column++) {
         if (row === 0 && column < dayOfWeek) {
           const copiedDate = new Date(lastDayInPreviousMonth.getTime());
           copiedDate.setDate(copiedDate.getDate() - (dayOfWeek - column) + 1);
           DaysInMonth.push(copiedDate);
-          // DaysInMonth.push(lastDayInPreviousMonth.getDate() - (dayOfWeek - column) + 1)
         } else {
           if (dateInThisMonth <= lastDayInThisMonth.getDate()) {
             const copiedDate = new Date(lastDayInPreviousMonth.getTime());
             copiedDate.setHours(dateInThisMonth*24);
             DaysInMonth.push(copiedDate);
-            // DaysInMonth.push(dateInThisMonth);
             dateInThisMonth ++;
           } else {
             const copiedDate = new Date(lastDayInThisMonth.getTime());
             copiedDate.setHours(dateInNextMonth*24);
             DaysInMonth.push(copiedDate);
-            // DaysInMonth.push(dateInNextMonth);
             dateInNextMonth ++;
           }
         }
@@ -80,7 +68,6 @@ export const useCalendar = ({ month, year, currentDate }) => {
     }
 
     setDays(DaysInMonth);
-    // }
   }, [year, month, currentDate, dayOfWeek]);
 
   return days;
